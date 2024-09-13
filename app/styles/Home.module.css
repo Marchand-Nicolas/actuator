@@ -15,6 +15,7 @@
   text-align: center;
   border-bottom-left-radius: 4rem;
   border-bottom-right-radius: 4rem;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
 }
 
 .openButton {
@@ -25,6 +26,23 @@
   border-radius: 4rem;
   cursor: pointer;
   height: 56px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.05);
+  animation: slideIn alternate-reverse 0.5s infinite;
+  transition: 0.5s;
+}
+
+@keyframes slideIn {
+  from {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.openButton:hover {
+  animation: none;
+  scale: 1.1;
 }
 
 .content,
@@ -46,4 +64,5 @@
   flex-direction: column;
   align-items: flex-start;
   padding: 0 2rem;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
 }
