@@ -16,6 +16,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Garage",
+  appleWebApp: true,
 };
 
 export default function RootLayout({
