@@ -6,7 +6,7 @@
   padding: 1rem;
   color: var(--primary);
   border-radius: 3rem;
-  background-color: white;
+  background-color: var(--foreground);
   font-weight: bold;
   display: flex;
   align-items: center;
