@@ -1,0 +1,28 @@
+.notification {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  right: 1rem;
+  padding: 1rem;
+  color: var(--primary);
+  border-radius: 3rem;
+  background-color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: slideIn 0.5s;
+}
+
+.icon {
+  font-size: 25px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
