@@ -38,8 +38,13 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [token]);
 
+  const isOnline = useMemo(
+    () => memory.battery !== null && memory.battery > 0,
+    [memory.battery]
+  );
+
   const handleOpen = async () => {
-    if (loading || !token) return;
+    if (loading || !token || !isOnline) return;
     setLoading(true);
     setStartedOpening(true);
     await open(token);
@@ -59,12 +64,12 @@ export default function Home() {
       <h1 className={styles.title}>Garage</h1>
       <div className={styles.content}>
         <button className={styles.openButton} onClick={handleOpen}>
-          {startedOpening ? <Spinner /> : "Ouvrir"}
+          {isOnline ? startedOpening ? <Spinner /> : "Ouvrir" : "Hors ligne"}
         </button>
       </div>
       <div className={styles.details}>
         <p>
-          <strong>Status:</strong> {memory.battery ? "En ligne" : "Hors ligne"}
+          <strong>Status:</strong> {isOnline ? "En ligne" : "Hors ligne"}
         </p>
         <p>
           <strong>Dernier signe de vie:</strong>{" "}
