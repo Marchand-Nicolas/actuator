@@ -39,8 +39,12 @@ export default function Home() {
   }, [token]);
 
   const isOnline = useMemo(
-    () => memory.battery !== null && memory.battery > 0,
-    [memory.battery]
+    () =>
+      memory.battery !== null &&
+      memory.battery > 0 &&
+      memory.lastPoll &&
+      new Date().getTime() - memory.lastPoll < 1000 * 60,
+    [memory]
   );
 
   const handleOpen = async () => {
@@ -69,7 +73,7 @@ export default function Home() {
       </div>
       <div className={styles.details}>
         <p>
-          <strong>Status:</strong> {isOnline ? "En ligne" : "Hors ligne"}
+          <strong>Status:</strong> {isOnline ? "En ligne" : "⚠️ Hors ligne"}
         </p>
         <p>
           <strong>Dernier signe de vie:</strong>{" "}
@@ -79,6 +83,15 @@ export default function Home() {
           <strong>Batterie:</strong>{" "}
           {memory.battery ? `${memory.battery}%` : "N/A"}
         </p>
+        {!isOnline && (
+          <Notification
+            key="offline"
+            message={`Le système s'est arrêté le ${new Date(
+              memory.lastPoll || 0
+            ).toLocaleString()}`}
+            icon="🚫"
+          />
+        )}
       </div>
       {openedAt && (
         <Notification

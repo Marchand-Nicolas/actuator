@@ -7,7 +7,7 @@ const getRelativeTime = (timestamp: number) => {
   }
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) {
-    return `Il y a ${minutes}mins`;
+    return `Il y a ${minutes}min`;
   }
   const hours = Math.floor(minutes / 60);
   if (hours < 24) {
