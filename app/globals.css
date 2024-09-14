@@ -6,11 +6,17 @@
   --background: #c9d1c8;
   --foreground: rgb(29, 41, 34);
   --primary: white;
+  --background-gradient: linear-gradient(
+    180deg,
+    #dfe7de 0%,
+    #dfe7de 50%,
+    var(--primary) 100%
+  );
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: var(--background-gradient);
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
   justify-content: center;

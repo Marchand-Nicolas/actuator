@@ -27,16 +27,18 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [startedOpening, setStartedOpening] = useState(false);
   const [openedAt, setOpenedAt] = useState<number | null>(null);
+  const [firstLoadDone, setFirstLoadDone] = useState(false);
 
   useEffect(() => {
     if (!token) return;
     const interval = setInterval(async () => {
       await ping(setMemory, token);
       setLoading(false);
+      if (!firstLoadDone) setFirstLoadDone(true);
     }, 1000);
     ping(setMemory, token);
     return () => clearInterval(interval);
-  }, [token]);
+  }, [token, firstLoadDone]);
 
   const isOnline = useMemo(
     () =>
@@ -68,12 +70,25 @@ export default function Home() {
       <h1 className={styles.title}>Garage</h1>
       <div className={styles.content}>
         <button className={styles.openButton} onClick={handleOpen}>
-          {isOnline ? startedOpening ? <Spinner /> : "Ouvrir" : "Hors ligne"}
+          {isOnline || !firstLoadDone ? (
+            startedOpening || !firstLoadDone ? (
+              <Spinner />
+            ) : (
+              "Ouvrir"
+            )
+          ) : (
+            "Hors ligne"
+          )}
         </button>
       </div>
       <div className={styles.details}>
         <p>
-          <strong>Status:</strong> {isOnline ? "En ligne" : "⚠️ Hors ligne"}
+          <strong>Status:</strong>{" "}
+          {firstLoadDone
+            ? isOnline
+              ? "En ligne"
+              : "⚠️ Hors ligne"
+            : "Chargement..."}
         </p>
         <p>
           <strong>Dernier signe de vie:</strong>{" "}
@@ -83,7 +98,7 @@ export default function Home() {
           <strong>Batterie:</strong>{" "}
           {memory.battery ? `${memory.battery}%` : "N/A"}
         </p>
-        {!isOnline && (
+        {!isOnline && firstLoadDone && (
           <Notification
             key="offline"
             message={`Le système s'est arrêté le ${new Date(
