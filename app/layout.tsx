@@ -26,6 +26,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#fff"></meta>
+        <meta name="apple-mobile-web-app-status-bar-style" content="white" />
+        <link
+          rel="apple-touch-icon"
+          sizes="192x192"
+          href="/apple-touch-icon-192x192.png"
+        ></link>
+        <link
+          rel="apple-touch-icon"
+          sizes="512x512"
+          href="/apple-touch-icon-512x512.png"
+        ></link>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
