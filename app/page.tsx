@@ -54,6 +54,7 @@ export default function Home() {
     setLoading(true);
     setStartedOpening(true);
     await open(token);
+    setLoading(true);
   };
 
   useEffect(() => {
