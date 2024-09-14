@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import styles from "./styles/Home.module.css";
 import { open, ping } from "./utils/apiService";
-import getRelativeTime from "./utils/getRelativeTime";
 import { useSearchParams } from "next/navigation";
-import Spinner from "./modules/spinner";
-import Notification from "./modules/notification";
+import Spinner from "./components/spinner";
+import Notification from "./components/notification";
+import RelativeTime from "./components/relativeTime";
 
 export type Memory = {
   battery: number | null;
@@ -28,17 +28,26 @@ export default function Home() {
   const [startedOpening, setStartedOpening] = useState(false);
   const [openedAt, setOpenedAt] = useState<number | null>(null);
   const [loadIndex, setLoadIndex] = useState(0);
+  const [notLoaded, setNotLoaded] = useState(true);
+
+  useEffect(() => {
+    if (loadIndex > 0) setNotLoaded(false);
+  }, [loadIndex]);
 
   useEffect(() => {
     if (!token) return;
-    const interval = setInterval(async () => {
-      await ping(setMemory, token);
+    let isMounted = true;
+    const load = async () => {
+      await ping(setMemory, token, notLoaded);
       setLoading(false);
       setLoadIndex((i) => i + 1);
-    }, 1000);
-    ping(setMemory, token);
-    return () => clearInterval(interval);
-  }, [token]);
+      if (isMounted) load();
+    };
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [token, notLoaded]);
 
   const isOnline = useMemo(
     () =>
@@ -99,7 +108,7 @@ export default function Home() {
         </p>
         <p>
           <strong>Dernier signe de vie:</strong>{" "}
-          {getRelativeTime(memory.lastPoll || 0)}
+          <RelativeTime date={memory.lastPoll || 0} />
         </p>
         <p>
           <strong>Batterie:</strong>{" "}

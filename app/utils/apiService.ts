@@ -1,13 +1,20 @@
 import { Memory } from "../page";
 
-export const ping = async (callback: (res: Memory) => void, token: string) => {
+export const ping = async (
+  callback: (res: Memory) => void,
+  token: string,
+  isFirstLoad: boolean
+) => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/status`, {
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/status?firstLoad=${isFirstLoad}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
     const data = await response.json();
     if (data.status === "ok") callback(data.memory);
   } catch (error) {

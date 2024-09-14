@@ -1,6 +1,6 @@
 const getRelativeTime = (timestamp: number) => {
   const now = Date.now();
-  const diff = now - timestamp;
+  const diff = Math.max(now - timestamp, 0);
   const seconds = Math.floor(diff / 1000);
   if (seconds < 60) {
     return `Il y a ${seconds}s`;
