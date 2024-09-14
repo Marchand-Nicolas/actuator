@@ -27,18 +27,18 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [startedOpening, setStartedOpening] = useState(false);
   const [openedAt, setOpenedAt] = useState<number | null>(null);
-  const [firstLoadDone, setFirstLoadDone] = useState(false);
+  const [loadIndex, setLoadIndex] = useState(0);
 
   useEffect(() => {
     if (!token) return;
     const interval = setInterval(async () => {
       await ping(setMemory, token);
       setLoading(false);
-      if (!firstLoadDone) setFirstLoadDone(true);
+      setLoadIndex((i) => i + 1);
     }, 1000);
     ping(setMemory, token);
     return () => clearInterval(interval);
-  }, [token, firstLoadDone]);
+  }, [token]);
 
   const isOnline = useMemo(
     () =>
@@ -58,6 +58,12 @@ export default function Home() {
   };
 
   useEffect(() => {
+    if (!startedOpening && memory.opening) {
+      setStartedOpening(true);
+    }
+  }, [memory.opening, startedOpening]);
+
+  useEffect(() => {
     if (startedOpening && !loading && !memory.opening) {
       setStartedOpening(false);
       setOpenedAt(Date.now());
@@ -71,8 +77,8 @@ export default function Home() {
       <h1 className={styles.title}>Garage</h1>
       <div className={styles.content}>
         <button className={styles.openButton} onClick={handleOpen}>
-          {isOnline || !firstLoadDone ? (
-            startedOpening || !firstLoadDone ? (
+          {isOnline || loadIndex === 0 ? (
+            startedOpening || loadIndex === 0 ? (
               <Spinner />
             ) : (
               "Ouvrir"
@@ -85,7 +91,7 @@ export default function Home() {
       <div className={styles.details}>
         <p>
           <strong>Status:</strong>{" "}
-          {firstLoadDone
+          {loadIndex > 1
             ? isOnline
               ? "En ligne"
               : "⚠️ Hors ligne"
@@ -99,7 +105,7 @@ export default function Home() {
           <strong>Batterie:</strong>{" "}
           {memory.battery ? `${memory.battery}%` : "N/A"}
         </p>
-        {!isOnline && firstLoadDone && (
+        {!isOnline && loadIndex > 1 && (
           <Notification
             key="offline"
             message={`Le système s'est arrêté le ${new Date(
