@@ -43,7 +43,7 @@ export default function Home() {
       memory.battery !== null &&
       memory.battery > 0 &&
       memory.lastPoll &&
-      new Date().getTime() - memory.lastPoll < 1000 * 60,
+      new Date().getTime() - memory.lastPoll < 1000 * 120,
     [memory]
   );
 
