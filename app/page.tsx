@@ -59,7 +59,7 @@ export default function Home() {
   );
 
   const handleOpen = async () => {
-    if (loading || !token || !isOnline) return;
+    if (!token || !isOnline) return;
     setLoading(true);
     setStartedOpening(true);
     await open(token);
