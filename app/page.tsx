@@ -39,7 +39,7 @@ export default function Home() {
   useEffect(() => {
     if (refresh) {
       setRefresh(false);
-      return setLoadIndex((i) => i + 1);
+      return;
     }
     if (!token) return;
     let isMounted = true;
@@ -117,7 +117,7 @@ export default function Home() {
       <div className={styles.details}>
         <p>
           <strong>Status:</strong>{" "}
-          {loadIndex > 1
+          {loadIndex > 0
             ? isOnline
               ? "En ligne"
               : "⚠️ Hors ligne"
@@ -132,9 +132,9 @@ export default function Home() {
           {memory.battery ? `${memory.battery}%` : "N/A"}
         </p>
         <p>
-          <strong>Version:</strong> 1.0.1
+          <strong>Version:</strong> 1.0.2
         </p>
-        {!isOnline && loadIndex > 1 && (
+        {!isOnline && loadIndex > 0 && (
           <Notification
             key="offline"
             message={`Le système s'est arrêté le ${new Date(
