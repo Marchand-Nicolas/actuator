@@ -131,6 +131,9 @@ export default function Home() {
           <strong>Batterie:</strong>{" "}
           {memory.battery ? `${memory.battery}%` : "N/A"}
         </p>
+        <p>
+          <strong>Version:</strong> 1.0.1
+        </p>
         {!isOnline && loadIndex > 1 && (
           <Notification
             key="offline"
