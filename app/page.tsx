@@ -29,25 +29,42 @@ export default function Home() {
   const [openedAt, setOpenedAt] = useState<number | null>(null);
   const [loadIndex, setLoadIndex] = useState(0);
   const [notLoaded, setNotLoaded] = useState(true);
+  const [refresh, setRefresh] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState(0);
 
   useEffect(() => {
     if (loadIndex > 0 && notLoaded) setNotLoaded(false);
   }, [loadIndex, notLoaded]);
 
   useEffect(() => {
+    if (refresh) {
+      setRefresh(false);
+      return setLoadIndex((i) => i + 1);
+    }
     if (!token) return;
     let isMounted = true;
     const load = async () => {
       await ping(setMemory, token, notLoaded);
       setLoading(false);
       setLoadIndex((i) => i + 1);
-      if (isMounted) load();
+      setLastRefresh(Date.now());
+      setTimeout(() => {
+        if (isMounted) load();
+      }, 200);
     };
     load();
     return () => {
       isMounted = false;
     };
-  }, [token, notLoaded]);
+  }, [token, notLoaded, refresh]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRefresh(true);
+      console.error("Watch dog...");
+    }, 12000);
+    return () => clearInterval(interval);
+  }, [lastRefresh]);
 
   const isOnline = useMemo(
     () =>
