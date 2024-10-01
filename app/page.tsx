@@ -31,21 +31,20 @@ export default function Home() {
   const [notLoaded, setNotLoaded] = useState(true);
 
   useEffect(() => {
-    if (loadIndex > 0) setNotLoaded(false);
-  }, [loadIndex]);
+    if (loadIndex > 0 && notLoaded) setNotLoaded(false);
+  }, [loadIndex, notLoaded]);
 
   useEffect(() => {
     if (!token) return;
-    let isMounted = true;
     const load = async () => {
       await ping(setMemory, token, notLoaded);
       setLoading(false);
       setLoadIndex((i) => i + 1);
-      if (isMounted) load();
     };
+    const interval = setInterval(load, 400);
     load();
     return () => {
-      isMounted = false;
+      clearInterval(interval);
     };
   }, [token, notLoaded]);
 
