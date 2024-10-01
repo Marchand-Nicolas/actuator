@@ -36,15 +36,16 @@ export default function Home() {
 
   useEffect(() => {
     if (!token) return;
+    let isMounted = true;
     const load = async () => {
       await ping(setMemory, token, notLoaded);
       setLoading(false);
       setLoadIndex((i) => i + 1);
+      if (isMounted) load();
     };
-    const interval = setInterval(load, 400);
     load();
     return () => {
-      clearInterval(interval);
+      isMounted = false;
     };
   }, [token, notLoaded]);
 
