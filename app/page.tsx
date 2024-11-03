@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import styles from "./styles/Home.module.css";
-import { open, ping } from "./utils/apiService";
+import { open, open5Minutes, ping } from "./utils/apiService";
 import { useSearchParams } from "next/navigation";
 import Spinner from "./components/spinner";
 import Notification from "./components/notification";
@@ -13,6 +13,8 @@ export type Memory = {
   ip: string | null;
   lastPoll: number | null;
   opening: boolean;
+  keepOpenStart: number | null;
+  keepOpenDuration: number | null;
 };
 
 export default function Home() {
@@ -23,6 +25,8 @@ export default function Home() {
     ip: null,
     lastPoll: null,
     opening: false,
+    keepOpenStart: null,
+    keepOpenDuration: null,
   });
   const [loading, setLoading] = useState(false);
   const [startedOpening, setStartedOpening] = useState(false);
@@ -31,6 +35,8 @@ export default function Home() {
   const [notLoaded, setNotLoaded] = useState(true);
   const [refresh, setRefresh] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [showClosed, setShowClosed] = useState(false);
 
   useEffect(() => {
     if (loadIndex > 0 && notLoaded) setNotLoaded(false);
@@ -98,21 +104,62 @@ export default function Home() {
     return () => clearTimeout(timeout);
   }, [memory.opening, loading, startedOpening]);
 
+  const openUntil = useMemo(() => {
+    if (!memory.keepOpenStart || !memory.keepOpenDuration) return null;
+    return memory.keepOpenStart + memory.keepOpenDuration;
+  }, [memory.keepOpenStart, memory.keepOpenDuration]);
+
+  useEffect(() => {
+    if (openUntil) {
+      const interval = setInterval(() => {
+        const left = openUntil - Date.now();
+        if (left < 0 && left > -101) {
+          setTimeout(() => setShowClosed(false), 3000);
+          setShowClosed(true);
+        }
+        if (left <= 0) {
+          setTimeLeft(0);
+          return;
+        }
+        setTimeLeft(left);
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [openUntil]);
+
+  const handleOpen5Min = async () => {
+    if (!token || !isOnline) return;
+    if (timeLeft > 0) return open5Minutes(token, 1);
+    setLoading(true);
+    setStartedOpening(true);
+    await open5Minutes(token, 5 * 60);
+    setLoading(true);
+  };
+
   return token ? (
     <div className={styles.page}>
       <h1 className={styles.title}>Garage</h1>
       <div className={styles.content}>
-        <button className={styles.openButton} onClick={handleOpen}>
-          {isOnline || loadIndex === 0 ? (
-            startedOpening || loadIndex === 0 ? (
-              <Spinner />
+        <div className={styles.buttons}>
+          <button className={styles.openButton} onClick={handleOpen}>
+            {isOnline || loadIndex === 0 ? (
+              startedOpening || loadIndex === 0 ? (
+                <Spinner />
+              ) : (
+                "Ouvrir"
+              )
             ) : (
-              "Ouvrir"
-            )
-          ) : (
-            "Hors ligne"
-          )}
-        </button>
+              "Hors ligne"
+            )}
+          </button>
+          {isOnline ? (
+            <button className={styles.openButton} onClick={handleOpen5Min}>
+              {timeLeft > 0
+                ? (timeLeft / 1000 / 60).toFixed(2) + " min restantes"
+                : "Ouvrir 5 min"}
+            </button>
+          ) : null}
+        </div>
       </div>
       <div className={styles.details}>
         <p>
@@ -132,7 +179,7 @@ export default function Home() {
           {memory.battery ? `${memory.battery}%` : "N/A"}
         </p>
         <p>
-          <strong>Version:</strong> 1.0.2
+          <strong>Version:</strong> 1.0.3
         </p>
         {!isOnline && loadIndex > 0 && (
           <Notification
@@ -150,6 +197,9 @@ export default function Home() {
           message="La porte est en train de s'ouvrir"
           icon="🚪"
         />
+      )}
+      {showClosed && (
+        <Notification key="closed" message="La porte est fermée" icon="🔒" />
       )}
     </div>
   ) : null;
