@@ -84,6 +84,13 @@ export default function Home() {
   const handleOpen = async () => {
     if (!token || !isOnline) return;
     setLoading(true);
+    try {
+      // Play alice.mp3
+      const audio = new Audio("/alice.mp3");
+      audio.play();
+    } catch (e) {
+      console.error(e);
+    }
     setStartedOpening(true);
     await open(token);
     setLoading(true);
@@ -179,7 +186,7 @@ export default function Home() {
           {memory.battery ? `${memory.battery}%` : "N/A"}
         </p>
         <p>
-          <strong>Version:</strong> 1.0.3
+          <strong>Version:</strong> 1.0.4
         </p>
         {!isOnline && loadIndex > 0 && (
           <Notification
