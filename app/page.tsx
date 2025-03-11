@@ -84,6 +84,8 @@ export default function Home() {
   const handleOpen = async () => {
     if (!token || !isOnline) return;
     setLoading(true);
+    setStartedOpening(true);
+    await open(token);
     try {
       // Play alice.mp3
       const audio = new Audio("/alice.mp3");
@@ -91,8 +93,6 @@ export default function Home() {
     } catch (e) {
       console.error(e);
     }
-    setStartedOpening(true);
-    await open(token);
     setLoading(true);
   };
 
