@@ -81,11 +81,7 @@ export default function Home() {
     [memory]
   );
 
-  const handleOpen = async () => {
-    if (!token || !isOnline) return;
-    setLoading(true);
-    setStartedOpening(true);
-    await open(token);
+  const playSound = () => {
     try {
       // Play alice.mp3
       const audio = new Audio("/alice.mp3");
@@ -93,6 +89,14 @@ export default function Home() {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const handleOpen = async () => {
+    if (!token || !isOnline) return;
+    setLoading(true);
+    setStartedOpening(true);
+    await open(token);
+    playSound();
     setLoading(true);
   };
 
@@ -140,6 +144,7 @@ export default function Home() {
     setLoading(true);
     setStartedOpening(true);
     await open5Minutes(token, 5 * 60);
+    playSound();
     setLoading(true);
   };
 
@@ -186,7 +191,7 @@ export default function Home() {
           {memory.battery ? `${memory.battery}%` : "N/A"}
         </p>
         <p>
-          <strong>Version:</strong> 1.0.4
+          <strong>Version:</strong> 1.0.5
         </p>
         {!isOnline && loadIndex > 0 && (
           <Notification
