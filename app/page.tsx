@@ -82,13 +82,13 @@ export default function Home() {
   );
 
   const playSound = () => {
-    try {
+    /*try {
       // Play alice.mp3
       const audio = new Audio("/alice.mp3");
       audio.play();
     } catch (e) {
       console.error(e);
-    }
+    }*/
   };
 
   const handleOpen = async () => {
